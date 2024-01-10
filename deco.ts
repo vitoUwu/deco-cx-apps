@@ -16,6 +16,7 @@ const config = {
     app("resend"),
     app("emailjs"),
     app("konfidency"),
+    app("discord-bot"),
     app("mailchimp"),
     app("ai-assistants"),
     app("files"),
