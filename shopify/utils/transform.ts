@@ -151,8 +151,9 @@ export const toProduct = (
         ...product.tags?.map((value) =>
           toPropertyValue({ name: "TAG", value })
         ),
-        ...product.collections?.nodes.map(({ title, handle }) =>
+        ...product.collections?.nodes.map(({ title, handle, id }) =>
           toPropertyValue({
+            "@id": id,
             name: title,
             value: handle,
             propertyID: "COLLECTION",
@@ -194,7 +195,7 @@ export const toProduct = (
 };
 
 const toPropertyValue = (
-  option: SelectedOptionShopify & { propertyID?: string },
+  option: SelectedOptionShopify & { propertyID?: string; "@id"?: string },
 ): PropertyValue => ({
   "@type": "PropertyValue",
   ...option,
