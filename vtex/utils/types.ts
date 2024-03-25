@@ -1213,3 +1213,142 @@ export interface ProductReviewData {
   data?: ProductReview[] | undefined;
   range?: ProductReviewRange;
 }
+
+export interface OrdersResponse {
+  list: Array<{
+    orderId: string;
+    creationDate: string;
+    clientName: string;
+    items: string | null;
+    totalValue: number;
+    paymentNames: string;
+    status: string;
+    statusDescription?: string;
+    sequence: string;
+    salesChannel: string;
+    affiliateId: string;
+    origin: string;
+    workflowInErrorState: boolean;
+    workflowInRetry: boolean;
+    lastMessageUnread: string | null;
+    ShippingEstimatedDate: string | null;
+    ShippingEstimatedDateMax: string | null;
+    ShippingEstimatedDateMin: string | null;
+    orderIsComplete: boolean;
+    listId: string | null;
+    listType: string | null;
+    authorizedDate: string | null;
+    callCenterOperatorName: string | null;
+    totalItems: number;
+    currencyCode: string;
+  }>;
+  facets: string[];
+  paging: {
+    total: number;
+    pages: number;
+    currentPage: number;
+    perPage: number;
+    stats: {
+      stats: {
+        totalValue: {
+          Count: number;
+          Max: number;
+          Mean: number;
+          Min: number;
+          Missing: number;
+          StdDev: number;
+          Sum: number;
+          SumOfSquares: number;
+          Facets: {
+            origin: {
+              Fulfillment: {
+                Count: number;
+                Max: number;
+                Mean: number;
+                Min: number;
+                Missing: number;
+                StdDev: number;
+                Sum: number;
+                SumOfSquares: number;
+                Facets: string | null;
+              };
+              Marketplace: {
+                Count: number;
+                Max: number;
+                Mean: number;
+                Min: number;
+                Missing: number;
+                StdDev: number;
+                Sum: number;
+                SumOfSquares: number;
+                Facets: string | null;
+              };
+            };
+            currencyCode: {
+              BRL: {
+                Count: number;
+                Max: number;
+                Mean: number;
+                Min: number;
+                Missing: number;
+                StdDev: number;
+                Sum: number;
+                SumOfSquares: number;
+                Facets: string | null;
+              };
+            };
+          };
+        };
+        totalItems: {
+          Count: number;
+          Max: number;
+          Mean: number;
+          Min: number;
+          Missing: number;
+          StdDev: number;
+          Sum: number;
+          SumOfSquares: number;
+          Facets: {
+            origin: {
+              Fulfillment: {
+                Count: number;
+                Max: number;
+                Mean: number;
+                Min: number;
+                Missing: number;
+                StdDevnumber: number;
+                Sum: number;
+                SumOfSquares: number;
+                Facets: string | null;
+              };
+              Marketplace: {
+                Count: number;
+                Max: number;
+                Mean: number;
+                Min: number;
+                Missing: number;
+                StdDev: number;
+                Sum: number;
+                SumOfSquares: number;
+                Facets: string | null;
+              };
+            };
+            currencyCode: {
+              BRL: {
+                Count: number;
+                Max: number;
+                Mean: number;
+                Min: number;
+                Missing: number;
+                StdDev: number;
+                Sum: number;
+                SumOfSquares: number;
+                Facets: string | null;
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+}
