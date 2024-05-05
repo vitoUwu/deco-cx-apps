@@ -1,8 +1,13 @@
-import { redirect } from "deco/mod.ts";
 import { getCookies } from "std/http/cookie.ts";
 import { AppMiddlewareContext } from "./mod.ts";
 
-export const middleware = (
+const IGNORE_HOST = [
+  "localhost",
+  "admin.deco.cx",
+];
+
+// deno-lint-ignore require-await
+export const middleware = async (
   _props: unknown,
   req: Request,
   ctx: AppMiddlewareContext,
@@ -10,14 +15,20 @@ export const middleware = (
   console.log("middleware", req.url);
   const url = new URL(req.url);
 
-  if (req.method !== "GET" || url.pathname !== "/_deco/login") {
+  if (
+    req.method !== "GET" || url.pathname !== "/_deco/login" ||
+    IGNORE_HOST.includes(url.hostname)
+  ) {
     return ctx.next!();
   }
 
   const cookies = getCookies(req.headers);
 
   if (!cookies["password"]) {
-    redirect("/_deco/login", 403);
+    return new Response(null, {
+      status: 301,
+      headers: { location: "/_deco/login" },
+    });
   }
 
   return ctx.next!();
