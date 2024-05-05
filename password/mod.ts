@@ -8,7 +8,17 @@ import manifest, { Manifest } from "./manifest.gen.ts";
 import { middleware } from "./middleware.ts";
 
 export interface State {
+  /**
+   * @title Password
+   * @description The password to access the website
+   */
   password: Secret;
+  /**
+   * @title Lock
+   * @description Whether the website is locked or not
+   * @default true
+   */
+  locked: boolean;
 }
 
 /**
@@ -21,4 +31,4 @@ export default function App(
 }
 
 export type AppContext = AC<ReturnType<typeof App>>;
-export type AppMiddlewareContext = AMC<App>;
+export type AppMiddlewareContext = AMC<App<Manifest, State>>;
