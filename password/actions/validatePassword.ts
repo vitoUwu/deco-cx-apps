@@ -17,7 +17,14 @@ export default async function validatePassword(
   const encryptedPassword = await encryptToHex(password);
 
   if (encryptedPassword !== originalPassword.get()) {
-    return false;
+    return {
+      valid: false as const,
+      error: "Invalid password",
+      debug: {
+        encryptedPassword,
+        originalPassword: originalPassword.get(),
+      },
+    };
   }
 
   setCookie(ctx.response.headers, {
@@ -28,5 +35,12 @@ export default async function validatePassword(
     httpOnly: true,
   });
 
-  return true;
+  return {
+    valid: true as const,
+    error: null,
+    debug: {
+      encryptedPassword,
+      originalPassword: originalPassword.get(),
+    },
+  };
 }
