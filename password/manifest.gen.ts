@@ -3,8 +3,12 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $$$$$$$$$0 from "./actions/validatePassword.ts";
+import * as $$$$$$0 from "./sections/PasswordCheck.tsx";
 
 const manifest = {
+  "sections": {
+    "password/sections/PasswordCheck.tsx": $$$$$$0,
+  },
   "actions": {
     "password/actions/validatePassword.ts": $$$$$$$$$0,
   },
