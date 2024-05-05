@@ -1,5 +1,6 @@
 import { shortcircuit } from "deco/engine/errors.ts";
 import { getCookies } from "std/http/cookie.ts";
+import { decryptFromHex } from "../website/utils/crypto.ts";
 import { AppMiddlewareContext } from "./mod.ts";
 
 const IGNORE_HOST = [
@@ -12,7 +13,7 @@ export const middleware = async (
   req: Request,
   ctx: AppMiddlewareContext,
 ) => {
-  const { password, locked } = ctx;
+  const { password: storePassword, locked } = ctx;
   const url = new URL(req.url);
   const response = await ctx.next!();
 
@@ -26,8 +27,12 @@ export const middleware = async (
   }
 
   const cookies = getCookies(req.headers);
+  const passwordFromCookie = cookies["password"];
+  const decryptedPassword = passwordFromCookie
+    ? (await decryptFromHex(passwordFromCookie)).decrypted
+    : null;
 
-  if (!cookies["password"] || cookies["password"] !== password.get()) {
+  if (!decryptedPassword || decryptedPassword !== storePassword.get()) {
     return shortcircuit(
       new Response(null, {
         status: 307,

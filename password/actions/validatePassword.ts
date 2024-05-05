@@ -14,21 +14,15 @@ export default async function validatePassword(
   const { password } = props;
   const { password: originalPassword } = ctx;
 
-  const encryptedPassword = await encryptToHex(password);
-
-  if (encryptedPassword !== originalPassword.get()) {
+  if (password !== originalPassword.get()) {
     return {
       valid: false as const,
       error: "Invalid password",
-      debug: {
-        encryptedPassword,
-        originalPassword: originalPassword.get(),
-      },
     };
   }
 
   setCookie(ctx.response.headers, {
-    value: encryptedPassword,
+    value: await encryptToHex(password),
     name: "password",
     path: "/",
     secure: true,
@@ -38,9 +32,5 @@ export default async function validatePassword(
   return {
     valid: true as const,
     error: null,
-    debug: {
-      encryptedPassword,
-      originalPassword: originalPassword.get(),
-    },
   };
 }
