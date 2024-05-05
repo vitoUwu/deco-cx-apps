@@ -6,7 +6,6 @@ const IGNORE_HOST = [
   "admin.deco.cx",
 ];
 
-// deno-lint-ignore require-await
 export const middleware = async (
   _props: unknown,
   req: Request,
@@ -14,22 +13,24 @@ export const middleware = async (
 ) => {
   console.log("middleware", req.url);
   const url = new URL(req.url);
+  const response = await ctx.next!();
 
   if (
     req.method !== "GET" || url.pathname !== "/_deco/login" ||
     IGNORE_HOST.includes(url.hostname)
   ) {
-    return ctx.next!();
+    return response;
   }
 
   const cookies = getCookies(req.headers);
 
   if (!cookies["password"]) {
+    console.log("redirecting to login");
     return new Response(null, {
-      status: 301,
+      status: 307,
       headers: { location: "/_deco/login" },
     });
   }
 
-  return ctx.next!();
+  return response;
 };
