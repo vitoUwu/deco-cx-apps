@@ -5,7 +5,7 @@ import { AppMiddlewareContext } from "./mod.ts";
 
 const IGNORE_HOST = [
   "localhost",
-  "admin.deco.cx",
+  // "admin.deco.cx",
 ];
 
 export const middleware = async (
@@ -19,7 +19,8 @@ export const middleware = async (
 
   // Ignore redirect in these cases
   if (
-    locked === false || req.method !== "GET" ||
+    locked === false || url.pathname.startsWith("/live") ||
+    req.method !== "GET" ||
     url.pathname === "/_deco/login" ||
     IGNORE_HOST.includes(url.hostname)
   ) {
