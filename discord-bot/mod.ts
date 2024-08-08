@@ -1,97 +1,135 @@
-import type { App as A, AppContext as AC } from "deco/mod.ts";
-import manifest, { Manifest } from "./manifest.gen.ts";
+import type {
+  App as A,
+  AppContext as AC,
+  AppMiddlewareContext as AMC,
+  ManifestOf,
+} from "deco/mod.ts";
+import { Bot } from "https://deno.land/x/discordeno@18.0.1/bot.ts";
+import { createBot } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
 import type { Secret } from "../website/loaders/secret.ts";
 import workflow from "../workflows/mod.ts";
-import { DiscordClient } from "./client.ts";
-import { createHttpClient } from "../utils/http.ts";
+import manifest, { type Manifest } from "./manifest.gen.ts";
+import { ProjectUser } from "./types.ts";
+import { Octokit } from "https://esm.sh/octokit@4.0.2";
+import { GithubClient } from "./client.ts";
 
 export type App = ReturnType<typeof DiscordBot>;
 export type AppContext = AC<App>;
+export type AppMiddlewareContext = AMC<App>;
+export type AppManifest = ManifestOf<App>;
 
-export interface Repository {
+interface GithubProps {
   /**
-   * @description Repository's owner
+   * @title Webhook Secret
+   * @description Secret create for the git hub webhook under https://github.com/{{organization}}/{{repo}}/settings/hooks
    */
-  organization: string;
+  webhook_secret: Secret;
   /**
-   * @description Repository name
+   * @title Organization Name
    */
-  repo: string;
+  org_name: string;
+  /**
+   * @title Repository Name
+   */
+  repo_name: string;
 }
 
-export interface User {
+interface DiscordProps {
   /**
-   * @description Git hub user
+   * @title Channel ID
+   * @description Discord channel where the bot will send the recurrent messages
    */
-  github_user: string;
+  channel_id: string;
+}
+
+interface DiscordApplicationsProps {
   /**
-   * @description Discord user id
+   * @title Public Key
+   * @description Public key provided by discord when you create your bot: https://discord.com/developers/applications/{{your_bot_id}}/information
    */
-  discord_user: string;
+  public_key: string;
+  /**
+   * @title App ID
+   * @description App ID provided by discord when you create your bot: https://discord.com/developers/applications/{{your_bot_id}}/information
+   */
+  app_id: string;
+  /**
+   * @title Token
+   * @description Token provided by discord to identify your bot when this app is communicating with discord APIs: https://discord.com/developers/applications/{{your_bot_id}}/bot
+   */
+  token: Secret;
 }
 
 /**
- * @title discord-bot
+ * @title {{github.org_name}}/{{github.repo_name}}
  */
-export interface Props {
+export interface Project {
+  github: GithubProps;
+  discord: DiscordProps;
   /**
-   * @description Secret create for the git hub webhook under https://github.com/{{organization}}/{{repo}}/settings/hooks
+   * @description Users that are working on this project
    */
-  git_hub_webhook_secret: Secret;
-  /**
-   * @description Octokit token necessary to retrieve git hub informations from your repositories
-   */
-  octokit_token: Secret;
-  /**
-   * @description Discord channel where the bot will send the recurrent messages
-   */
-  discord_channel_id: string;
-  /**
-   * @description Public key provided by discord when you create your bot: https://discord.com/developers/applications/{{your_bot_id}}/information
-   */
-  discord_bot_public_key: string;
-  /**
-   * @description App ID provided by discord when you create your bot: https://discord.com/developers/applications/{{your_bot_id}}/information
-   */
-  discord_bot_app_id: string;
-  /**
-   * @description Token provided by discord to identify your bot when this app is communicating with discord APIs: https://discord.com/developers/applications/{{your_bot_id}}/bot
-   */
-  discord_bot_token: Secret;
-  /**
-   * @description List with all repositories to watch
-   */
-  repositories: Repository[];
-  /**
-   * @description Users mapping from git to discord, necessary to tag members on discord's threads
-   */
-  usersFromGitToDiscord?: User[];
+  users: ProjectUser[];
 }
 
-export default function DiscordBot(
-  props: Props,
-) {
-  const {
-    discord_bot_app_id,
-    discord_bot_token,
-  } = props;
+interface Props {
+  projects: Project[];
+  discord: DiscordApplicationsProps;
+  /**
+   * @title Github Token
+   * @description Octokit token necessary to retrieve github information from your repositories
+   */
+  githubToken: Secret;
+  /**
+   * @title Active
+   * @description If the bot is active or not
+   * @default false
+   */
+  active: boolean;
+}
 
-  const headers = new Headers();
-  headers.set("Authorization", `Bot ${discord_bot_token}`);
-  headers.set("Content-Type", "application/json; charset=UTF-8");
-  headers.set(
-    "User-Agent",
-    "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
-  );
+/**
+ * @title Discord Integration
+ * @description Discord integration for deco.cx
+ * @category Frameworks
+ * @logo https://raw.githubusercontent.com/vitouwu/deco-cx-apps/feat-discord-bot/discord-bot/logo.png
+ */
+export default function DiscordBot(props: Props) {
+  const { discord, projects, active, githubToken } = props;
 
-  const discordClient = createHttpClient<DiscordClient>({
-    base: `https://discord.com/api/v10/applications/${discord_bot_app_id}/`,
-    headers: headers,
+  if (
+    !discord.token || !projects.length || !active
+  ) {
+    return {
+      state: {
+        ...props,
+        githubClient: {} as GithubClient,
+        discord: {
+          ...discord,
+          bot: {} as Bot,
+        },
+      },
+      manifest,
+    };
+  }
+
+  const discordBot = createBot({
+    token: discord.token.get()!,
   });
+
+  const githubClient = new GithubClient(
+    new Octokit({
+      auth: githubToken.get(),
+    }),
+  );
 
   const state = {
     ...props,
-    discordClient,
+    githubClient,
+    discord: {
+      ...discord,
+      bot: discordBot,
+    },
   };
 
   const app: A<Manifest, typeof state, [ReturnType<typeof workflow>]> = {
@@ -102,3 +140,5 @@ export default function DiscordBot(
 
   return app;
 }
+
+export { Preview } from "./preview/Preview.tsx";
