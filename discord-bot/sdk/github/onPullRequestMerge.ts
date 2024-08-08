@@ -7,7 +7,7 @@ import {
 import type { Project } from "../../mod.ts";
 import type { WebhookPullRequestPayload } from "../../types.ts";
 import { createActionRow, createButton } from "../discord/components.ts";
-import { codeBlock } from "../discord/textFormatting.ts";
+import { bold } from "../discord/textFormatting.ts";
 import { getRandomItem } from "../random.ts";
 
 export default async function onPullRequestMerge(
@@ -15,14 +15,14 @@ export default async function onPullRequestMerge(
   project: Project,
   bot: Bot,
 ) {
-  const { pull_request } = props;
+  const { pull_request, repository } = props;
 
   const owner = pull_request.user;
   const mergedBy = props.pull_request.merged_by ?? owner;
 
-  const message = mergedBy.login === owner.login
-    ? `**${mergedBy.login}** mergeou o próprio Pull Request.`
-    : `**${mergedBy.login}** mergeou o Pull Request feito por **${owner.login}**.`;
+  const title = mergedBy.login === owner.login
+    ? `${bold(mergedBy.login)} mergeou o próprio PR`
+    : `${bold(mergedBy.login)} mergeou o PR feito por ${bold(owner.login)}.`;
   const mergedAt = new Date(
     pull_request.merged_at ?? pull_request.closed_at ??
       pull_request.created_at,
@@ -50,37 +50,17 @@ export default async function onPullRequestMerge(
   ]);
 
   await sendMessage(bot, project.discord.channel_id, {
-    content: message,
     embeds: [{
-      title: pull_request.title,
-      description: pull_request.body ?? "",
       thumbnail: {
         url: mergedBy.avatar_url,
       },
-      url: pull_request.html_url,
+      title,
+      description: `${bold(`(${repository.full_name})`)}
+[${bold(`#${pull_request.number} - ${pull_request.title}`)}](${pull_request.html_url}) - ${duration}\n\n${
+        pull_request.body || "Sem descrição"
+      }`,
       color: 0x8957e5,
-      fields: [
-        ...(mergedAt !== createdAt
-          ? [{
-            name: "Duração",
-            value: codeBlock(duration.join(", ")),
-            inline: false,
-          }]
-          : []),
-        {
-          name: "Comentários",
-          value: codeBlock(`${pull_request.comments ?? 0}`, "diff"),
-          inline: false,
-        },
-        {
-          name: "Commits",
-          value: codeBlock(
-            `${pull_request.commits ?? 0}`,
-            "diff",
-          ),
-          inline: false,
-        },
-      ],
+      timestamp: Date.now(),
     }],
     components: [viewOnGithubRow],
     allowedMentions: {
