@@ -2,7 +2,10 @@ import { STATUS_CODE } from "$fresh/server.ts";
 import type { AppContext } from "../mod.ts";
 import onPullRequestMerge from "../sdk/github/onPullRequestMerge.ts";
 import onPullRequestOpen from "../sdk/github/onPullRequestOpen.ts";
-import { isWebhookPullRequestPayload } from "../sdk/github/validateWebhookPayload.ts";
+import {
+  isWebhookPingPayload,
+  isWebhookPullRequestPayload,
+} from "../sdk/github/validateWebhookPayload.ts";
 import { verify } from "../sdk/github/verifyWebhook.ts";
 import type { WebhookPullRequestPayload } from "../types.ts";
 
@@ -23,6 +26,10 @@ export default async function action(
     return new Response("Signature is missing", {
       status: STATUS_CODE.Unauthorized,
     });
+  }
+
+  if (isWebhookPingPayload(props)) {
+    return new Response(null, { status: 200 });
   }
 
   if (!isWebhookPullRequestPayload(props)) {
