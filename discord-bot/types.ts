@@ -61,6 +61,31 @@ interface AutoMerge {
   commit_message: string;
 }
 
+interface Hook {
+  type: string;
+  id: number;
+  name: string;
+  active: boolean;
+  events: string[];
+  config: {
+    content_type: string;
+    insecure_ssl: string;
+    secret: string;
+    url: string;
+  };
+  updated_at: string;
+  created_at: string;
+  url: string;
+  test_url: string;
+  ping_url: string;
+  deliveries_url: string;
+  last_response: {
+    code: string | null;
+    status: string;
+    message: string | null;
+  };
+}
+
 export interface PullRequest {
   url: string;
   id: number;
@@ -244,6 +269,14 @@ export interface WebhookPullRequestPayload {
     | "unlocked";
   number: number;
   pull_request: PullRequest;
+  repository: Repository;
+  sender: User;
+}
+
+export interface WebhookPingPayload {
+  zen: string;
+  hook_id: number;
+  hook: Hook;
   repository: Repository;
   sender: User;
 }
