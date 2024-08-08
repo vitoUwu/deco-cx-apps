@@ -18,6 +18,10 @@ export function inlineCode(content: string) {
   return `\`${content}\``;
 }
 
+export function bold(content: string) {
+  return `**${content}**`;
+}
+
 type TimestampFormat = "t" | "T" | "d" | "D" | "f" | "F" | "R";
 
 export function timestamp(seconds: number, format: TimestampFormat = "f") {

@@ -7,11 +7,7 @@ import {
 import type { Project } from "../../mod.ts";
 import type { WebhookPullRequestPayload } from "../../types.ts";
 import { createActionRow, createButton } from "../discord/components.ts";
-import {
-  codeBlock,
-  timestamp,
-  userMention,
-} from "../discord/textFormatting.ts";
+import { bold, timestamp, userMention } from "../discord/textFormatting.ts";
 import { getRandomItem } from "../random.ts";
 
 export default async function onPullRequestOpen(
@@ -19,8 +15,8 @@ export default async function onPullRequestOpen(
   project: Project,
   bot: Bot,
 ) {
-  const { pull_request } = props;
-  const owner = pull_request.user;
+  const { pull_request, repository } = props;
+  const owner = pull_request.user.login;
   const theChosenOne = getRandomItem(project.users);
   const viewOnGithubRow = createActionRow([
     createButton({
@@ -30,42 +26,23 @@ export default async function onPullRequestOpen(
     }),
   ]);
 
-  const message = `**${owner.login}** criou um novo Pull Request.`;
   const seconds = Math.floor(
     new Date(pull_request.created_at).getTime() / 1000,
   );
 
   await sendMessage(bot, project.discord.channel_id, {
-    content: message +
-      (theChosenOne ? ` ${userMention(theChosenOne.discordId)}` : ""),
+    content: (theChosenOne ? ` ${userMention(theChosenOne.discordId)}` : ""),
     embeds: [{
-      title: pull_request.title,
-      description: `${timestamp(seconds, "R")}\n\n${pull_request.body || ""}`,
       thumbnail: {
         url: pull_request.user.avatar_url,
       },
-      url: pull_request.html_url,
+      title: `${owner} abriu um novo PR`,
+      description: `${bold(`(${repository.full_name})`)}
+[${bold(`#${pull_request.number} - ${pull_request.title}`)}](${pull_request.html_url}) - ${
+        timestamp(seconds, "R")
+      }\n\n${pull_request.body || "Sem descrição"}`,
       color: 0x02c563,
-      fields: [
-        {
-          name: "Additions",
-          value: codeBlock(`+ ${pull_request.additions ?? 0}`, "diff"),
-          inline: false,
-        },
-        {
-          name: "Deletions",
-          value: codeBlock(`- ${pull_request.deletions ?? 0}`, "diff"),
-          inline: false,
-        },
-        {
-          name: "Changed files",
-          value: codeBlock(
-            `${pull_request.changed_files ?? 0}`,
-            "diff",
-          ),
-          inline: false,
-        },
-      ],
+      timestamp: new Date(pull_request.created_at).getTime(),
     }],
     components: [viewOnGithubRow],
     allowedMentions: {
