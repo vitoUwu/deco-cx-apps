@@ -1,71 +1,14 @@
-import { Octokit } from "https://cdn.skypack.dev/@octokit/rest@19.0.4";
 import { Endpoints } from "https://esm.sh/@octokit/types@9.0.0";
-
-export interface DiscordCommandOption {
-  name: string;
-  description: string;
-  required: boolean;
-  type: number;
-}
-
-export interface DiscordCommand {
-  name: string;
-  description: string;
-  options: DiscordCommandOption[];
-  type: number;
-}
-
-export interface DiscordClient {
-  "PUT commands": {
-    response: void;
-    body: DiscordCommand[];
-  };
-}
-
-/**
- * TODO: Octokit doesn't work with esm.sh (timeouts) apparently. Didn't investigate a lot on why
- * skypack was being used.
- *
- * But, also apparently, Skypack doesn't return types all that good. At least we're not leveraging it.
- *
- * So, I've included types from esm.sh (only types).
- *
- * At the same time, after using the client fully-typed,
- * I'm starting to think that we might not need this client
- * and Octokit might be enough.
- *
- * Also: RepoOwner shouldn't be constant in the future (repos will be hosted elsewhere),
- * so we might use the opportunity to take this into consideration
- */
-const _client = (octokit_token: string) =>
-  new Octokit({
-    auth: octokit_token,
-  });
-
-export interface Reviewer {
-  login: string;
-}
-
-export interface PullRequest {
-  url: string;
-  state: string;
-  title: string;
-  owner: string;
-  reviewers: Reviewer[];
-}
+import { Octokit } from "https://esm.sh/octokit@4.0.2";
 
 export class GithubClient {
-  private static getOctokit(octokit_token: string) {
-    return _client(octokit_token);
-  }
+  constructor(private octokit: Octokit) {}
 
-  public static async getAllActivePulls(
+  public async getAllActivePulls(
     organization: string,
     repoName: string,
-    octokit_token: string,
   ) {
-    const octokit = this.getOctokit(octokit_token);
-    const response = await octokit.request(
+    const response = await this.octokit.request(
       "GET /repos/{owner}/{repo}/pulls?state=open",
       { owner: organization, repo: repoName },
     ) as Endpoints["GET /repos/{owner}/{repo}/pulls"]["response"];
@@ -77,15 +20,13 @@ export class GithubClient {
     return response.data;
   }
 
-  public static async requestReviewersForPull(
+  public async requestReviewersForPull(
     organization: string,
     repoName: string,
-    pullNumber: string,
+    pullNumber: number,
     reviewers: string[],
-    octokit_token: string,
   ) {
-    const octokit = this.getOctokit(octokit_token);
-    const response = await octokit.request(
+    const response = await this.octokit.request(
       "POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers",
       {
         owner: organization,

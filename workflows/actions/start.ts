@@ -115,6 +115,7 @@ export default async function startWorkflow<
       ...(props?.metadata ?? {}),
     },
   };
+  console.log(payload);
   return await start<Arg, unknown, WorkflowMetadata>(payload, props?.restart)
     .then(toExecution);
 }
