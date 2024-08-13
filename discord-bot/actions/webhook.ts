@@ -17,6 +17,7 @@ export default async function action(
   const signature = req.headers.get("x-hub-signature-256");
 
   if (!signature) {
+    console.error("Signature is missing. Request Headers:", req.headers);
     return new Response("Signature is missing", {
       status: STATUS_CODE.Unauthorized,
     });
@@ -27,6 +28,7 @@ export default async function action(
   }
 
   if (!isWebhookPullRequestPayload(props)) {
+    console.error("Invalid payload. Request Body:", props);
     return new Response("Invalid payload", { status: STATUS_CODE.BadRequest });
   }
 
@@ -34,12 +36,14 @@ export default async function action(
     `${github.org_name}/${github.repo_name}` === props.repository.full_name
   );
   if (!project) {
+    console.error("Unknown repository. Request Body:", props);
     return new Response("Unknown repository", {
       status: STATUS_CODE.BadRequest,
     });
   }
 
   if (!project.active) {
+    console.error("Project is not active. Data:", { project, props });
     return new Response("Project is not active", {
       status: STATUS_CODE.ServiceUnavailable,
     });
@@ -47,12 +51,14 @@ export default async function action(
 
   const secret = project.github.webhook_secret.get();
   if (!secret) {
+    console.error("Secret is missing. Data:", { project, props });
     return new Response("Secret is missing", {
       status: STATUS_CODE.BadRequest,
     });
   }
 
   if (!(await verify(secret, JSON.stringify(props), signature))) {
+    console.error("Invalid signature. Data:", { project, props });
     return new Response("Invalid signature", {
       status: STATUS_CODE.Unauthorized,
     });
