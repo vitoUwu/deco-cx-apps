@@ -70,6 +70,12 @@ export interface Project {
    * @description Users that are working on this project
    */
   users: ProjectUser[];
+  /**
+   * @title Active
+   * @description If the project is active or not
+   * @default true
+   */
+  active: boolean;
 }
 
 interface Props {
@@ -80,12 +86,6 @@ interface Props {
    * @description Octokit token necessary to retrieve github information from your repositories
    */
   githubToken: Secret;
-  /**
-   * @title Active
-   * @description If the bot is active or not
-   * @default false
-   */
-  active: boolean;
 }
 
 /**
@@ -95,11 +95,9 @@ interface Props {
  * @logo https://raw.githubusercontent.com/vitouwu/deco-cx-apps/feat-discord-bot/discord-bot/logo.png
  */
 export default function DiscordBot(props: Props) {
-  const { discord, projects, active, githubToken } = props;
+  const { discord, projects, githubToken } = props;
 
-  if (
-    !discord.token || !projects.length || !active
-  ) {
+  if (!discord.token || !projects.length || !githubToken?.get()) {
     return {
       state: {
         ...props,

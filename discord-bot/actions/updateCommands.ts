@@ -1,4 +1,3 @@
-import { STATUS_CODE } from "$fresh/server.ts";
 import {
   upsertGlobalApplicationCommands,
 } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
@@ -16,10 +15,6 @@ export default async function action(
   _req: unknown,
   ctx: AppContext,
 ) {
-  if (!ctx.active) {
-    return new Response(null, { status: STATUS_CODE.ServiceUnavailable });
-  }
-
   try {
     await upsertGlobalApplicationCommands(
       ctx.discord.bot,

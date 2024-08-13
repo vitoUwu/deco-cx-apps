@@ -14,12 +14,6 @@ export default async function action(
   req: Request,
   ctx: AppContext,
 ) {
-  if (!ctx.active) {
-    return new Response("App is not active", {
-      status: STATUS_CODE.ServiceUnavailable,
-    });
-  }
-
   const signature = req.headers.get("x-hub-signature-256");
 
   if (!signature) {
@@ -42,6 +36,12 @@ export default async function action(
   if (!project) {
     return new Response("Unknown repository", {
       status: STATUS_CODE.BadRequest,
+    });
+  }
+
+  if (!project.active) {
+    return new Response("Project is not active", {
+      status: STATUS_CODE.ServiceUnavailable,
     });
   }
 

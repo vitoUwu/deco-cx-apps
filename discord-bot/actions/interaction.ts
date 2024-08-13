@@ -1,11 +1,10 @@
-import { STATUS_CODE } from "$fresh/server.ts";
 import {
   type DiscordInteraction,
   InteractionTypes,
   verifySignature,
 } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
-import ping from "../sdk/discord/commands/ping.ts";
 import type { AppContext } from "../mod.ts";
+import ping from "../sdk/discord/commands/ping.ts";
 import { ChatInputInteraction } from "../sdk/discord/lib.ts";
 import { COMMANDS } from "./updateCommands.ts";
 
@@ -14,10 +13,6 @@ export default function action(
   req: Request,
   ctx: AppContext,
 ) {
-  if (!ctx.active) {
-    return new Response(null, { status: STATUS_CODE.ServiceUnavailable });
-  }
-
   if (req.method === "POST") {
     const signature = req.headers.get("x-signature-ed25519") || "";
     const timestamp = req.headers.get("x-signature-timestamp") || "";
