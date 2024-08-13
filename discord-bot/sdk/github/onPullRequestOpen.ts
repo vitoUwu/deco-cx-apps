@@ -17,7 +17,9 @@ export default async function onPullRequestOpen(
 ) {
   const { pull_request, repository } = props;
   const owner = pull_request.user.login;
-  const theChosenOne = getRandomItem(project.users);
+  const theChosenOne = getRandomItem(
+    project.users.filter((user) => user.githubUsername !== owner),
+  );
   const viewOnGithubRow = createActionRow([
     createButton({
       label: "Ver no GitHub",
