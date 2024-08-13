@@ -1,5 +1,5 @@
 import { timingSafeEqual } from "std/crypto/mod.ts";
-import { encodeHex } from "std/encoding/hex.ts";
+import { encode as encodeHex } from "std/encoding/hex.ts";
 
 const encoder = new TextEncoder();
 
@@ -28,7 +28,7 @@ async function sign(secret: string, payload: string): Promise<Uint8Array> {
     encoder.encode(payload),
   );
 
-  return encoder.encode(`sha256=${encodeHex(signature)}`);
+  return encoder.encode(`sha256=${encodeHex(new Uint8Array(signature))}`);
 }
 
 export async function verify(
