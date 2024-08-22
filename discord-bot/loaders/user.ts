@@ -1,5 +1,19 @@
-import { User } from "../types.ts";
+import { ProjectUser } from "../types.ts";
+import UserPreview from "../preview/User.tsx";
 
-export default function loader(props: User): User {
-  return props;
+const Preview = UserPreview;
+export { Preview };
+
+interface Props {
+  /**
+   * @title {{githubUsername}} ({{discordId}})
+   */
+  user: {
+    discordId: string;
+    githubUsername: string;
+  };
+}
+
+export default function loader(props: Props): ProjectUser {
+  return props.user;
 }
