@@ -5,12 +5,14 @@
 import * as $$$$$$$$$0 from "./actions/interaction.ts";
 import * as $$$$$$$$$1 from "./actions/updateCommands.ts";
 import * as $$$$$$$$$2 from "./actions/webhook.ts";
-import * as $$$0 from "./loaders/user.ts";
+import * as $$$0 from "./loaders/projects.ts";
+import * as $$$1 from "./loaders/user.ts";
 import * as $$$$$$$$$$0 from "./workflows/waitForReviewer.ts";
 
 const manifest = {
   "loaders": {
-    "discord-bot/loaders/user.ts": $$$0,
+    "discord-bot/loaders/projects.ts": $$$0,
+    "discord-bot/loaders/user.ts": $$$1,
   },
   "actions": {
     "discord-bot/actions/interaction.ts": $$$$$$$$$0,
