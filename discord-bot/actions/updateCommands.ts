@@ -1,3 +1,4 @@
+import { STATUS_CODE } from "@std/http/status";
 import {
   upsertGlobalApplicationCommands,
 } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
@@ -26,10 +27,10 @@ export default async function action(
         error: err.message,
       }),
       {
-        status: 500,
+        status: STATUS_CODE.InternalServerError,
       },
     );
   }
 
-  return new Response(null, { status: 204 });
+  return new Response(null, { status: STATUS_CODE.NoContent });
 }

@@ -1,3 +1,4 @@
+import { STATUS_CODE } from "@std/http/status";
 import {
   type Bot,
   ButtonStyles,
@@ -52,5 +53,5 @@ export default async function onPullRequestOpen(
     },
   });
 
-  return new Response(null, { status: 204 });
+  return new Response(null, { status: STATUS_CODE.NoContent });
 }

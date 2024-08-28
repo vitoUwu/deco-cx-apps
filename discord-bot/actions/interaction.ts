@@ -1,3 +1,4 @@
+import { STATUS_CODE } from "@std/http/status";
 import {
   type DiscordInteraction,
   InteractionTypes,
@@ -27,7 +28,9 @@ export default function action(
     });
 
     if (!isValid) {
-      return new Response("Invalid signature", { status: 401 });
+      return new Response("Invalid signature", {
+        status: STATUS_CODE.Unauthorized,
+      });
     }
   }
 
@@ -36,14 +39,14 @@ export default function action(
   }
 
   if (!props.data) {
-    return new Response(null, { status: 204 });
+    return new Response(null, { status: STATUS_CODE.BadRequest });
   }
 
   if (props.type === InteractionTypes.ApplicationCommand) {
     const command = COMMANDS.get(props.data.name);
 
     if (!command) {
-      return new Response(null, { status: 204 });
+      return new Response(null, { status: STATUS_CODE.NotFound });
     }
 
     return command.execute(
@@ -55,7 +58,7 @@ export default function action(
       ctx,
     ).catch((err) => {
       console.error(err);
-      return new Response(null, { status: 500 });
+      return new Response(null, { status: STATUS_CODE.InternalServerError });
     });
   }
 }

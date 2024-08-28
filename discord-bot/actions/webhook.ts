@@ -1,4 +1,4 @@
-import { STATUS_CODE } from "$fresh/server.ts";
+import { STATUS_CODE } from "@std/http/status";
 import type { AppContext } from "../mod.ts";
 import onPullRequestMerge from "../sdk/github/onPullRequestMerge.ts";
 import onPullRequestOpen from "../sdk/github/onPullRequestOpen.ts";
