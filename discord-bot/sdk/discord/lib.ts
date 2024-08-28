@@ -46,11 +46,18 @@ export class ChatInputInteraction {
   }
 
   getOption<T>(name: string) {
-    return this.interaction.data?.options?.find((option) =>
+    const option = this.interaction.data?.options?.find((option) =>
       option.name === name
-    ) as
-      | T
-      | undefined;
+    );
+
+    if (!option) {
+      return null;
+    }
+
+    return {
+      ...option,
+      value: option.value as T | undefined,
+    };
   }
 
   getStringOption(name: string) {
