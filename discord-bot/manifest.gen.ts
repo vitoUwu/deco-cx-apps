@@ -3,8 +3,9 @@
 // This file is automatically updated during development when running `dev.ts`.
 
 import * as $$$$$$$$$0 from "./actions/interaction.ts";
-import * as $$$$$$$$$1 from "./actions/updateCommands.ts";
-import * as $$$$$$$$$2 from "./actions/webhook.ts";
+import * as $$$$$$$$$1 from "./actions/summary/send.ts";
+import * as $$$$$$$$$2 from "./actions/updateCommands.ts";
+import * as $$$$$$$$$3 from "./actions/webhook.ts";
 import * as $$$0 from "./loaders/projects.ts";
 import * as $$$1 from "./loaders/user.ts";
 import * as $$$$$$$$$$0 from "./workflows/waitForReviewer.ts";
@@ -16,8 +17,9 @@ const manifest = {
   },
   "actions": {
     "discord-bot/actions/interaction.ts": $$$$$$$$$0,
-    "discord-bot/actions/updateCommands.ts": $$$$$$$$$1,
-    "discord-bot/actions/webhook.ts": $$$$$$$$$2,
+    "discord-bot/actions/summary/send.ts": $$$$$$$$$1,
+    "discord-bot/actions/updateCommands.ts": $$$$$$$$$2,
+    "discord-bot/actions/webhook.ts": $$$$$$$$$3,
   },
   "workflows": {
     "discord-bot/workflows/waitForReviewer.ts": $$$$$$$$$$0,

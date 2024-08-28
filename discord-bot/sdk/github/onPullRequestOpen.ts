@@ -33,7 +33,7 @@ export default async function onPullRequestOpen(
     new Date(pull_request.created_at).getTime() / 1000,
   );
 
-  await sendMessage(bot, project.discord.channel_id, {
+  await sendMessage(bot, project.discord.pr_channel_id, {
     content: (theChosenOne ? ` ${userMention(theChosenOne.discordId)}` : ""),
     embeds: [{
       thumbnail: {

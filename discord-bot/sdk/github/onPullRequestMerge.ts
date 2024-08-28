@@ -50,7 +50,7 @@ export default async function onPullRequestMerge(
     }),
   ]);
 
-  await sendMessage(bot, project.discord.channel_id, {
+  await sendMessage(bot, project.discord.pr_channel_id, {
     embeds: [{
       thumbnail: {
         url: mergedBy.avatar_url,

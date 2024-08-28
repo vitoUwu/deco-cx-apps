@@ -4,6 +4,7 @@ import {
   type DiscordCreateApplicationCommand,
 } from "https://deno.land/x/discordeno@18.0.1/mod.ts";
 import type { AppContext } from "../../../mod.ts";
+import { dateInSeconds } from "../../date.ts";
 import type { ChatInputInteraction } from "../lib.ts";
 import { inlineCode, timestamp } from "../textFormatting.ts";
 
@@ -33,7 +34,7 @@ async function execute(
   _req: Request,
   ctx: AppContext,
 ) {
-  const repository = interaction.getStringOption("repository")!;
+  const repository = interaction.getStringOption("repository")?.value;
   const project = ctx.projects.find(
     (project) => project.github.repo_name === repository,
   );
@@ -44,21 +45,17 @@ async function execute(
     });
   }
 
-  const response = await ctx.githubClient.getAllActivePulls(
-    project.github.org_name,
-    project.github.repo_name,
-  );
+  const response = await ctx.githubClient.getPullRequests({
+    owner: project.github.org_name,
+    repo: project.github.repo_name,
+    state: "open",
+  });
 
   if (!response.length) {
     return await interaction.respondWithMessage({
       content: "Nenhum pull request aberto foi encontrado",
     });
   }
-
-  const createdAtInSeconds = (date: string) =>
-    Math.floor(
-      new Date(date).getTime() / 1000,
-    );
 
   return await interaction.respondWithMessage({
     embeds: [{
@@ -70,7 +67,7 @@ async function execute(
       fields: response.slice(0, 10).map((pr) => ({
         name: `${pr.number} | ${pr.title}`,
         value: `Criado ${
-          timestamp(createdAtInSeconds(pr.created_at), "R")
+          timestamp(dateInSeconds(pr.created_at), "R")
         }\nCriado por ${
           inlineCode(pr.user?.login ?? "No user")
         }\n[Ver no GitHub](${pr.html_url})`,

@@ -36,10 +36,15 @@ interface GithubProps {
 
 interface DiscordProps {
   /**
-   * @title Channel ID
-   * @description Discord channel where the bot will send the recurrent messages
+   * @title Pull Request Channel ID
+   * @description Discord channel where the bot will send the recurrent messages about pull requests
    */
-  channel_id: string;
+  pr_channel_id: string;
+  /**
+   * @title Summary Channel ID
+   * @description Discord channel where the bot will send the recurrent messages about pull requests summary
+   */
+  summary_channel_id: string;
 }
 
 interface DiscordApplicationsProps {
@@ -86,6 +91,11 @@ interface Props {
    * @description Octokit token necessary to retrieve github information from your repositories
    */
   githubToken: Secret;
+  /**
+   * @title Cron Job Secret
+   * @description Secret to validate requests from cronjobs
+   */
+  cronJobSecret: Secret;
 }
 
 /**
