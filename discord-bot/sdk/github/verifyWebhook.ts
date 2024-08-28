@@ -1,5 +1,5 @@
-import { timingSafeEqual } from "std/crypto/mod.ts";
-import { encode as encodeHex } from "std/encoding/hex.ts";
+import { timingSafeEqual } from "@std/crypto/timing-safe-equal";
+import { encodeHex } from "@std/encoding/hex";
 
 const encoder = new TextEncoder();
 
