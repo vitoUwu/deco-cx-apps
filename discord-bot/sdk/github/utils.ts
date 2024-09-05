@@ -1,7 +1,15 @@
-import { PullRequest } from "../../types.ts";
+import type { WebhookPullRequestPayload } from "../../types.ts";
+import { isWebhookPullRequestEditPayload } from "./validateWebhookPayload.ts";
 
-export function isDraft(pr: PullRequest) {
+export function isDraft(title: string) {
   return ["[draft]", "(draft)"].some((draft) =>
-    pr.title.toLowerCase().includes(draft)
+    title.toLowerCase().includes(draft)
   );
+}
+
+export function wasInDraft(payload: WebhookPullRequestPayload) {
+  return isWebhookPullRequestEditPayload(payload) &&
+    !!payload.changes?.title?.from &&
+    isDraft(payload.changes.title.from) &&
+    !isDraft(payload.pull_request.title);
 }

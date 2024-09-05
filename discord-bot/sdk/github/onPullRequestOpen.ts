@@ -18,7 +18,7 @@ export default async function onPullRequestOpen(
   bot: Bot,
 ) {
   const { pull_request, repository } = props;
-  if (isDraft(pull_request)) {
+  if (isDraft(pull_request.title)) {
     return new Response(null, { status: STATUS_CODE.NoContent });
   }
 

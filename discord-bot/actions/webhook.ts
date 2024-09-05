@@ -2,6 +2,7 @@ import { STATUS_CODE } from "@std/http/status";
 import type { AppContext } from "../mod.ts";
 import onPullRequestMerge from "../sdk/github/onPullRequestMerge.ts";
 import onPullRequestOpen from "../sdk/github/onPullRequestOpen.ts";
+import { wasInDraft } from "../sdk/github/utils.ts";
 import {
   isWebhookPingPayload,
   isWebhookPullRequestPayload,
@@ -64,10 +65,10 @@ export default async function action(
     });
   }
 
-  if (props.action === "opened") {
-    return await onPullRequestOpen(props, project, ctx.discord.bot);
+  if (props.action === "opened" || wasInDraft(props)) {
+    return onPullRequestOpen(props, project, ctx.discord.bot);
   } else if (props.action === "closed" && props.pull_request.merged) {
-    return await onPullRequestMerge(props, project, ctx.discord.bot);
+    return onPullRequestMerge(props, project, ctx.discord.bot);
   }
 
   return new Response(null, { status: 200 });

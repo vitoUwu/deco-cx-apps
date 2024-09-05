@@ -273,6 +273,27 @@ export interface WebhookPullRequestPayload {
   sender: User;
 }
 
+export interface WebhookPullRequestEditPayload
+  extends WebhookPullRequestPayload {
+  action: "edited";
+  changes: {
+    base?: {
+      ref: {
+        from: string;
+      };
+      sha: {
+        from: string;
+      };
+    };
+    body?: {
+      from: string;
+    };
+    title?: {
+      from: string;
+    };
+  };
+}
+
 export interface WebhookPingPayload {
   zen: string;
   hook_id: number;

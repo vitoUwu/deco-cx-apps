@@ -1,5 +1,6 @@
 import type {
   WebhookPingPayload,
+  WebhookPullRequestEditPayload,
   WebhookPullRequestPayload,
 } from "../../types.ts";
 
@@ -11,6 +12,18 @@ export function isWebhookPullRequestPayload(
     props !== null &&
     "action" in props &&
     typeof props.action === "string"
+  );
+}
+
+export function isWebhookPullRequestEditPayload(
+  props: WebhookPullRequestPayload | unknown,
+): props is WebhookPullRequestEditPayload {
+  return (
+    typeof props === "object" &&
+    props !== null &&
+    "action" in props &&
+    typeof props.action === "string" &&
+    props.action === "edited"
   );
 }
 
