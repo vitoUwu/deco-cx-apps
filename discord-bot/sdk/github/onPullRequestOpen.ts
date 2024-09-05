@@ -10,6 +10,7 @@ import type { WebhookPullRequestPayload } from "../../types.ts";
 import { createActionRow, createButton } from "../discord/components.ts";
 import { bold, timestamp, userMention } from "../discord/textFormatting.ts";
 import { getRandomItem } from "../random.ts";
+import { isDraft } from "./utils.ts";
 
 export default async function onPullRequestOpen(
   props: WebhookPullRequestPayload,
@@ -17,6 +18,10 @@ export default async function onPullRequestOpen(
   bot: Bot,
 ) {
   const { pull_request, repository } = props;
+  if (isDraft(pull_request)) {
+    return new Response(null, { status: STATUS_CODE.NoContent });
+  }
+
   const owner = pull_request.user.login;
   const theChosenOne = getRandomItem(
     project.users.filter((user) => user.githubUsername !== owner),

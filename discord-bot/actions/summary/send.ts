@@ -6,6 +6,8 @@ import {
 import type { AppContext } from "../../mod.ts";
 import { dateInSeconds, isToday } from "../../sdk/date.ts";
 import { inlineCode, timestamp } from "../../sdk/discord/textFormatting.ts";
+import { isDraft } from "../../sdk/github/utils.ts";
+import type { PullRequest } from "../../types.ts";
 
 export default async function action(
   _props: unknown,
@@ -22,13 +24,13 @@ export default async function action(
   }
 
   for (const project of ctx.projects.filter((project) => project.active)) {
-    const openPullRequests = await ctx.githubClient.getPullRequests({
+    const openPullRequests = (await ctx.githubClient.getPullRequests({
       owner: project.github.org_name,
       repo: project.github.repo_name,
       state: "open",
       direction: "desc",
       sort: "created",
-    });
+    })).filter((pr) => !isDraft(pr as PullRequest));
 
     const closedPullRequests = (await ctx.githubClient.getPullRequests({
       owner: project.github.org_name,
